@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-#
-# Very basic example of using Python and IMAP to iterate over emails in a
-# gmail folder/label.  This code is released into the public domain.
-#
-# RKI July 2013
-# http://www.voidynullness.net/blog/2013/07/25/gmail-email-with-python-via-imap/
-#
 import sys
 import imaplib
 import getpass
@@ -17,7 +10,7 @@ import requests
 import random
 import ast
 import time
-EMAIL_ACCOUNT = "shashankparewar@gmail.com"
+EMAIL_ACCOUNT = "abcdefghijklmnopqrst@gmail.com"
 EMAIL_FOLDER = "INBOX"
 
 emailList = []
@@ -41,15 +34,12 @@ headers = {
         'accept-encoding':'gzip,deflate,sdch',
         'accept-language' : 'en-US,en;q=0.8',
          'user-agent':'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537/36(KHTML, like Gecko) Chrome/44.0.2403.107 Safari/537.36',
-         'Referer':'http://oneplus.net/invites?kolid=66UTRF'
+         'Referer':'http://oneplus.net/invites?kolid=JLAX2O'
 }
 
 def make_request(url):
     for i in range(1):
-        try:
-            r = requests.get(url,headers=headers)
-        except:
-            return
+        r = requests.get(url,headers=headers)
         if r.status_code == requests.codes.ok:
             response = r.text.replace('null','"hagga"')
             print response
@@ -57,16 +47,13 @@ def make_request(url):
             print response
             if response['ret'] ==0 and 'hagga' in response['errMsg']:
                 print 'Email seems has been sent, will retry'
-                time.sleep(2)
                 continue
             elif response['ret'] == -1 and 'e-mail' in response['errMsg']:
                 print response['errMsg']
                 break
             else:
-                print 'Status Unknown'
+                print 'Status Unknown, will retry'
                 return False
-        else:
-            return False
     return True
 
 def process_mailbox(M):
@@ -75,16 +62,14 @@ def process_mailbox(M):
     For the sake of this example, print some headers.
     """
 
-    rv, data = M.search(None, 'SUBJECT', "Quora")
-    if rv != 'OK' :
+    rv, data = M.search(None, 'SUBJECT', "Confirm your email")
+    if rv != 'OK':
         print "No messages found!"
         return
     num = data[0].split()
     mails = data[0].split()
-    print len(mails)
     if len(num)==0:
         return
-    '''
     num =num[len(num)-1]
     rv, data = M.fetch(num, "(RFC822)")
     if rv != 'OK':
@@ -112,9 +97,8 @@ def process_mailbox(M):
                     print('Confirmation done')
             else:
                 pass
-    '''
     for num in mails:
-        M.store(num,'+FLAGS','\\Deleted')
+        M.store(num, '+FLAGS', '\\Deleted')
     M.expunge()
     '''
     #matchObj = re.match( r'invites\.oneplus\.net/confirm/', line)
@@ -129,11 +113,11 @@ def process_mailbox(M):
         local_date = datetime.datetime.fromtimestamp(
             email.utils.mktime_tz(date_tuple))
         print "Local Date:", \
-            local_date.strftime("%a, %d %b %Y %H:%M:%S")
+            local_date.st  rftime("%a, %d %b %Y %H:%M:%S")
     '''
 
-allDots('abcdefghijklmnopqrst1992'.replace('.',''))
-emailList = list(set(sorted(emailList, key= lambda mail:mail.count('.'))))
+allDots('abcdefghijklmnopqrst'.replace('.',''))
+emailList=list(sorted(set(emailList), key=lambda mail: mail.count('.')))
 M = imaplib.IMAP4_SSL('imap.gmail.com',993)
 
 try:
@@ -148,19 +132,13 @@ rv, mailboxes = M.list()
 if rv == 'OK':
     print "Mailboxes:"
     print mailboxes
-with open('latest3.out','r') as latest:
-    count = int(latest.readline())
-#sh.a.sh.a.n.k.s.ikandar
-#count =0
-rv, data = M.select(EMAIL_FOLDER)
-if rv == 'OK':
-    print "Processing mailbox...\n"
-    process_mailbox(M)
-    time.sleep(5)
-'''
-while(count<len(emailList)):
+
+with open('latest2.out','r') as latest:
+    count=int(latest.readline())
+
+while(count<=len(emailList)):
     mail = emailList[count]
-    url = 'https://invites.oneplus.net/index.php?r=share/signup&email={0}@gmail.com&koid=66UTRF&_={1}'
+    url = 'https://invites.oneplus.net/index.php?r=share/signup&email={0}@gmail.com&koid=JLAX2O&_={1}'
     timestamp = int((datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()*1000)
     print timestamp
     print mail
@@ -177,9 +155,8 @@ while(count<len(emailList)):
             print "ERROR: Unable to open mailbox ", rv
     else:
         time.sleep(5)
-    with open('latest3.out','w') as latest:
+    with open('latest2.out','w') as latest:
         latest.write(str(count))
-    count+=1
-'''
+    count-=1
 M.close()
 M.logout()
